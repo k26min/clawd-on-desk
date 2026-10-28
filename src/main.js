@@ -125,6 +125,7 @@ const {
 const { createSessionFolderOpener } = require("./session-open-folder");
 const { createOpencodeSessionAttacher } = require("./opencode-session-attach");
 const { isTrustedMainFrameEvent, registerPetInteractionIpc } = require("./pet-interaction-ipc");
+const { createWorkstreamLauncher } = require("./workstream-launcher");
 const { createSystemWakeRecovery } = require("./system-wake-recovery");
 const { formatLocalTimestamp } = require("./log-timestamp");
 const { launchClaudeSession, openTerminalAt } = require("./launch-claude");
@@ -5460,6 +5461,7 @@ function createWindow() {
         _sessionHud.revealFromPet();
       }
     },
+    openWorkstream: createWorkstreamLauncher({ log: (message) => console.log(`Clawd: ${message}`) }),
     statPath: (p) => fs.promises.stat(p),
     openTerminalAt: (dir) => openTerminalAt(dir),
     dropLog: (message) => console.log(`Clawd: ${message}`),

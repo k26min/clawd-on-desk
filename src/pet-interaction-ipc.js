@@ -68,6 +68,7 @@ function registerPetInteractionIpc(options = {}) {
   const showDashboard = requiredDependency(options.showDashboard, "showDashboard");
   const focusSession = requiredDependency(options.focusSession, "focusSession");
   const revealSessionHud = requiredDependency(options.revealSessionHud, "revealSessionHud");
+  const openWorkstream = options.openWorkstream || (() => {});
   const setLowPowerIdlePaused = requiredDependency(
     options.setLowPowerIdlePaused,
     "setLowPowerIdlePaused"
@@ -178,6 +179,11 @@ function registerPetInteractionIpc(options = {}) {
 
   on("pet-interaction:reveal-session-hud", () => {
     revealSessionHud();
+  });
+
+  // Double-click on the pet: open the agent workstream visualizer.
+  on("pet-interaction:open-workstream", () => {
+    openWorkstream();
   });
 
   // OS file drop from the hit window (#459, Windows/Linux only): first path

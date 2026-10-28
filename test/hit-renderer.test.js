@@ -63,6 +63,7 @@ function createHarness({ isMac = false, sendState = {} } = {}) {
         exitMiniMode: () => apiCalls.push(["exitMiniMode"]),
         showDashboard: () => apiCalls.push(["showDashboard"]),
         revealSessionHud: () => apiCalls.push(["revealSessionHud"]),
+        openWorkstream: () => apiCalls.push(["openWorkstream"]),
         startDragReaction: (direction) => apiCalls.push(["startDragReaction", direction]),
         endDragReaction: () => apiCalls.push(["endDragReaction"]),
         playClickReaction: (svg, d) => apiCalls.push(["playClickReaction", svg, d]),
@@ -122,6 +123,39 @@ function createHarness({ isMac = false, sendState = {} } = {}) {
 
   return { apiCalls, apiHandlers, pointerdown, pointermove, pointerup, fireTimer, timers, area, context };
 }
+
+describe("hit-renderer double-click opens the workstream app", () => {
+  const settle = (h) => h.fireTimer((t) => t.ms === 400);
+  const names = (h) => h.apiCalls.map((c) => c[0]);
+
+  it("double-click opens it and still plays the poke reaction", () => {
+    const h = createHarness();
+    h.pointerup({}); h.pointerup({});
+    assert.ok(!names(h).includes("openWorkstream"), "waits for the click window to settle");
+    settle(h);
+    assert.ok(names(h).includes("openWorkstream"));
+    assert.ok(names(h).includes("playClickReaction"), "existing animation still plays");
+  });
+
+  it("opens it even when the pet is busy and can't react", () => {
+    const h = createHarness({ sendState: { currentState: "working", miniMode: false, dndEnabled: false } });
+    h.pointerup({}); h.pointerup({});
+    settle(h);
+    assert.ok(names(h).includes("openWorkstream"));
+    assert.ok(!names(h).includes("playClickReaction"));
+  });
+
+  it("single click and the 4-click flail do not open it", () => {
+    const one = createHarness();
+    one.pointerup({}); settle(one);
+    assert.ok(!names(one).includes("openWorkstream"));
+    const four = createHarness();
+    for (let i = 0; i < 4; i++) four.pointerup({});
+    settle(four);
+    assert.ok(!names(four).includes("openWorkstream"));
+    assert.ok(names(four).includes("playClickReaction"), "flail still plays");
+  });
+});
 
 describe("hit-renderer input layer", () => {
   it("plain single click reveals HUD, does NOT call focusTerminal", () => {

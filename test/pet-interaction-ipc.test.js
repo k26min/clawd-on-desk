@@ -100,6 +100,7 @@ function createHarness(overrides = {}) {
     focusSession: (sessionId, options) => calls.push(["focusSession", sessionId, options]),
     setLowPowerIdlePaused: (value) => calls.push(["setLowPowerIdlePaused", value]),
     revealSessionHud: () => calls.push(["revealSessionHud"]),
+    openWorkstream: () => calls.push(["openWorkstream"]),
     statPath: async (p) => {
       calls.push(["statPath", p]);
       if (state.statDirs.has(p)) return { isDirectory: () => true };
@@ -141,6 +142,12 @@ test("accessory-mirror hands main the facing the renderer reported", () => {
   assert.deepStrictEqual(seen, [true, false, true]);
 });
 
+test("pet-interaction:open-workstream opens the workstream app", () => {
+  const { ipcMain, calls } = createHarness();
+  ipcMain.send("pet-interaction:open-workstream");
+  assert.deepStrictEqual(calls.filter((c) => c[0] === "openWorkstream"), [["openWorkstream"]]);
+});
+
 test("pet interaction IPC registers owned channels and disposes them", () => {
   const { ipcMain, runtime } = createHarness();
 
@@ -155,6 +162,7 @@ test("pet interaction IPC registers owned channels and disposes them", () => {
     "low-power-idle-paused",
     "pause-cursor-polling",
     "pet-drop-paths",
+    "pet-interaction:open-workstream",
     "pet-interaction:reveal-session-hud",
     "pet-visual-ready",
     "pet-visual-settled",

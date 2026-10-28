@@ -226,6 +226,9 @@ function handleClick(clientX) {
       clickCount = 0;
       const dir = firstClickDir;
       firstClickDir = null;
+      // A settled double-click (not the 4-click flail) opens the workstream
+      // visualizer, whether or not the pet is free to play its poke below.
+      window.hitAPI.openWorkstream();
       if (!canPlayReactionNow()) return;
       if (annoyedReact && Math.random() < 0.5) {
         playReaction(annoyedReact.file, annoyedReact.duration || 3500);
