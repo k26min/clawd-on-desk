@@ -75,6 +75,15 @@ Download and smoke-test the draft release assets before publishing the draft.
 If the draft is wrong, fix the issue before publishing; do not publish a known
 bad draft release.
 
+### v1.4.3 Draft Smoke Checklist
+
+Fork release (k26min/clawd-on-desk), Windows x64 only.
+
+- **Windows x64:** packaged app shows `1.4.3` metadata, and About shows `v1.4.3` from `app.getVersion()`.
+- **Windows x64:** updater metadata versions and artifact names match `1.4.3` and the generated assets.
+- **Windows x64:** an installed v1.4.2 finds v1.4.3 through Check for Updates, downloads it, and restarts into v1.4.3.
+- **Windows x64:** double-clicking the pet opens HALOFLUX on the monitor the pet is on, and moves an open HALOFLUX window there.
+
 ### v1.4.0 Draft Smoke Checklist
 
 Use the draft release installer or package artifact, not `npm start`, and record

@@ -30,11 +30,20 @@ function workstreamEnv(env = process.env) {
   return out;
 }
 
+function displayArgs(getAnchor) {
+  let p = null;
+  try { p = getAnchor(); } catch (_) {}
+  if (!p || !Number.isFinite(p.x) || !Number.isFinite(p.y)) return [];
+  return [`--display-at=${Math.round(p.x)},${Math.round(p.y)}`];
+}
+
 function createWorkstreamLauncher(deps = {}) {
   const spawnImpl = deps.spawn || spawn;
   const existsSync = deps.existsSync || fs.existsSync;
   const env = deps.env || process.env;
   const log = deps.log || (() => {});
+  // Where the pet is (screen DIPs): HaloFlux opens on, or moves its window to, the display containing that point.
+  const getAnchor = deps.getAnchor || (() => null);
 
   return function openWorkstream() {
     const exe = resolveWorkstreamApp(env);
@@ -43,7 +52,7 @@ function createWorkstreamLauncher(deps = {}) {
       return false;
     }
     try {
-      const child = spawnImpl(exe, [], {
+      const child = spawnImpl(exe, displayArgs(getAnchor), {
         cwd: path.dirname(exe),
         env: workstreamEnv(env),
         detached: true,
@@ -66,5 +75,6 @@ module.exports = {
   DEFAULT_WORKSTREAM_APP,
   resolveWorkstreamApp,
   workstreamEnv,
+  displayArgs,
   createWorkstreamLauncher,
 };

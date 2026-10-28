@@ -5461,7 +5461,15 @@ function createWindow() {
         _sessionHud.revealFromPet();
       }
     },
-    openWorkstream: createWorkstreamLauncher({ log: (message) => console.log(`Clawd: ${message}`) }),
+    openWorkstream: createWorkstreamLauncher({
+      log: (message) => console.log(`Clawd: ${message}`),
+      // the pet's centre: HaloFlux opens on whichever monitor the pet is on
+      getAnchor: () => {
+        if (!win || win.isDestroyed()) return null;
+        const b = getPetWindowBounds();
+        return b ? { x: b.x + b.width / 2, y: b.y + b.height / 2 } : null;
+      },
+    }),
     statPath: (p) => fs.promises.stat(p),
     openTerminalAt: (dir) => openTerminalAt(dir),
     dropLog: (message) => console.log(`Clawd: ${message}`),

@@ -7,6 +7,7 @@ const {
   DEFAULT_WORKSTREAM_APP,
   resolveWorkstreamApp,
   workstreamEnv,
+  displayArgs,
   createWorkstreamLauncher,
 } = require("../src/workstream-launcher");
 
@@ -35,6 +36,19 @@ describe("workstream launcher", () => {
     assert.strictEqual(calls[0].opts.detached, true);
     assert.strictEqual(calls[0].unref, true);
     assert.deepStrictEqual(calls[0].opts.env, { PATH: "p", CLAUDE_CONFIG_DIR: "keep" });
+  });
+
+  it("passes the pet's position so HaloFlux opens on that monitor", () => {
+    const { spawn, calls } = fakeSpawn();
+    const open = createWorkstreamLauncher({ spawn, existsSync: () => true, env: {}, getAnchor: () => ({ x: 2880.4, y: -120.6 }) });
+    open();
+    assert.deepStrictEqual(calls[0].args, ["--display-at=2880,-121"]);
+  });
+
+  it("launches without a position when the pet's is unknown", () => {
+    assert.deepStrictEqual(displayArgs(() => null), []);
+    assert.deepStrictEqual(displayArgs(() => ({ x: NaN, y: 1 })), []);
+    assert.deepStrictEqual(displayArgs(() => { throw new Error("no window"); }), []);
   });
 
   it("logs and does nothing when the app is missing", () => {
