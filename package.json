@@ -201,7 +201,7 @@
     "publish": [
       {
         "provider": "github",
-        "owner": "rullerzhou-afk",
+        "owner": "k26min",
         "repo": "clawd-on-desk"
       }
     ]

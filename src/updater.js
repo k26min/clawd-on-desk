@@ -6,7 +6,9 @@ const electron = require("electron");
 const { redactSecrets } = require("./secret-redact");
 const { getUpdateInstallFormat } = require("./update-install-format");
 
-const RELEASES_LATEST_URL = "https://github.com/rullerzhou-afk/clawd-on-desk/releases/latest";
+// GitHub repo the update check reads releases from; keep in sync with build.publish in package.json
+const UPDATE_REPO = "k26min/clawd-on-desk";
+const RELEASES_LATEST_URL = `https://github.com/${UPDATE_REPO}/releases/latest`;
 const APT_GUIDE_URL = "https://rullerzhou-afk.github.io/clawd-on-desk/apt/";
 const DEPENDENCY_INSTALL_TIMEOUT_MS = 10 * 60 * 1000;
 const UPDATE_ERROR_DETAIL_MAX_LENGTH = 8 * 1024;
@@ -739,7 +741,7 @@ function initUpdater(ctx, deps = {}) {
     return new Promise((resolve, reject) => {
       const req = httpsGet({
         hostname: "github.com",
-        path: "/rullerzhou-afk/clawd-on-desk/releases/latest",
+        path: `/${UPDATE_REPO}/releases/latest`,
         headers: {
           "User-Agent": "Clawd-on-Desk",
           Accept: "text/html,*/*",
@@ -776,7 +778,7 @@ function initUpdater(ctx, deps = {}) {
       if (lastReleaseEtag) headers["If-None-Match"] = lastReleaseEtag;
       const req = httpsGet({
         hostname: "api.github.com",
-        path: "/repos/rullerzhou-afk/clawd-on-desk/releases/latest",
+        path: `/repos/${UPDATE_REPO}/releases/latest`,
         headers,
       }, (res) => {
         // 304 Not Modified — drain and serve the cached release.
